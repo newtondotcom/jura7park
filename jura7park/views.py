@@ -1,9 +1,10 @@
 from django.http import HttpRequest, HttpResponse
-from jura7park.request_be import *
+from jura7park.request_be import get_main, get_shop, get_price, get_stock, gen_avatar, gen_qrcode, get_balance,define_buying, get_recent_buyings, get_recent_qrcode, get_recent_challenges, get_x_prems, get_user_model, check_user, get_code_balance, code_exists, code_used, use_code, get_recent_buyings2, get_recent_qrcode2, gen_nom_dino, add_avatar, set_admin, set_staff, unset_admin, update_balance, histodefi
 from db.models import points, Produit, Enigme, repenigmes, paris, histodinos, Photo, codeqr, Stock
 from django.contrib.admin.views.decorators import staff_member_required
 from jura7park.discord import send_message, send_achat, send_qr
 import datetime
+from django.shortcuts import render, redirect
 
 
 def message_error(message,url,bouton,request):
@@ -426,7 +427,6 @@ def offline(request):
 
 
 from webpush import send_user_notification
-from webpush import send_group_notification
 
 @staff_member_required
 def testnotif(request):

@@ -1,9 +1,8 @@
 from django.contrib import admin
-from . import views
+import jura7park.views as views
 from django.urls import path, include
 
 urlpatterns = [
-
     path('ping', views.ping, name='ping'),
     path('shop/<nb>', views.shop),
     path('ld',views.leaderboard),
