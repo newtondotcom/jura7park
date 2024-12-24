@@ -109,11 +109,7 @@ def validate(request,name):
 
 def validatedbuying(request,name2):
   if not request.user.is_authenticated:
-    message = "Vous devez etre connectes pour acheter un objet"
-    url = "/login/churros/"
-    bouton = "Se connecter"
-    context = { "message" : message, "url" : url , "bouton" : bouton}
-    return render(request, 'err.html' , context = context)
+    return message_error("Vous devez etre connectes pour acheter un objet",SOCIAL_AUTH_LOGIN_URL,'Se connecter',request)
   else:
     if not int(get_balance(request.user)) < int(get_price(name2)):
       if get_stock(name2) > 0:
@@ -147,10 +143,7 @@ def remerciements(request):
 
 def validatedqrcode(request,name2):
   if not request.user.is_authenticated:
-      message = "Vous devez etre connectes pour utiliser un code QR"
-      url = "/login/churros/"
-      bouton = "Se connecter"
-      return message_error(message,url,bouton,request)
+      return message_error("Vous devez etre connectes pour utiliser un code QR",SOCIAL_AUTH_LOGIN_URL,"Se connecter",request)
   else:
     if code_exists(name2):
       if code_used(name2,request.user):
@@ -305,14 +298,14 @@ def my_account(request):
   else:
     return message_error("Vous devez etre connectes pour acceder a votre compte",SOCIAL_AUTH_LOGIN_URL,'Se connecter',request)
 
-#@staff_member_required
+@staff_member_required
 def registerstaff(request,name):
   set_staff(name)
   send_message(str(name)+'a été mis staff par '+ str(request.user))
   #message_error("Vous avez bien ajoute " + name + " en tant qu'administrateur",'/admin','Retour a l\'accueil',request)
   return redirect('/admin/auth/user/')
 
-#@staff_member_required
+@staff_member_required
 def registeradmin(request,name):
   set_admin(name)
   send_message(str(name)+'a été mis staff par '+ str(request.user))
@@ -330,7 +323,6 @@ def genavatarlist(request,nb):
     return message_error("Vous devez etre connectes pour acceder a cette page",SOCIAL_AUTH_LOGIN_URL,'Se connecter',request)
   else:
     number = Stock.objects.filter(surnom=request.user).count()
-    modulo = 3
     string = ""
     if not number<=3:
       for i in range(number//3+1):
@@ -349,11 +341,8 @@ def chooseavatar(request,nb):
 @staff_member_required
 def resetbalance(request):
   for i in points.objects.all():
-    try :
-      query = Stock(avatar = i.avatar,nomavatar = i.nomavatar,surnom = i.surnom)
-      query.save()
-    except :
-      None
+    query = Stock(avatar = i.avatar,nomavatar = i.nomavatar,surnom = i.surnom)
+    query.save()
   for i in points.objects.all():
     i.point = 10
     if codeqr.objects.filter(utilisateur=i.surnom,utilise=True).exists():
