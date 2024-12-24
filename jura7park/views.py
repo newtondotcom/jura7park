@@ -5,6 +5,8 @@ from django.contrib.admin.views.decorators import staff_member_required
 from jura7park.discord import send_message, send_achat, send_qr
 import datetime
 from django.shortcuts import render, redirect
+from jura7park.settings import SOCIAL_AUTH_LOGIN_URL
+from django.db.models import Sum
 
 
 def message_error(message,url,bouton,request):
@@ -77,6 +79,7 @@ def test(request):
     aprem = get_main(4,3)
     soir = get_main(4,4)
 
+
   return render(request,'indexe2.html', {"paris" : parisss,"matins":matin,"midi":midi,"aprem":aprem,"soir":soir})
 
 
@@ -93,7 +96,7 @@ def leaderboard(request):
 
 def validate(request,name):
   if not request.user.is_authenticated:
-   return message_error("Vous devez etre connectes",'/accounts/login/','Se connecter',request)
+   return message_error("Vous devez etre connectes",SOCIAL_AUTH_LOGIN_URL,'Se connecter',request)
   else:
     current_object = Produit.objects.get(id=name)
     objet = current_object.title
@@ -107,7 +110,7 @@ def validate(request,name):
 def validatedbuying(request,name2):
   if not request.user.is_authenticated:
     message = "Vous devez etre connectes pour acheter un objet"
-    url = "/accounts/login/"
+    url = "/login/churros/"
     bouton = "Se connecter"
     context = { "message" : message, "url" : url , "bouton" : bouton}
     return render(request, 'err.html' , context = context)
@@ -145,7 +148,7 @@ def remerciements(request):
 def validatedqrcode(request,name2):
   if not request.user.is_authenticated:
       message = "Vous devez etre connectes pour utiliser un code QR"
-      url = "/accounts/login/"
+      url = "/login/churros/"
       bouton = "Se connecter"
       return message_error(message,url,bouton,request)
   else:
@@ -169,7 +172,7 @@ def validatedqrcode(request,name2):
 
 def enigme(request,nb):
   if not request.user.is_authenticated:
-    return message_error("Vous devez etre connectes pour acceder a cette page",'/accounts/login/','Se connecter',request)
+    return message_error("Vous devez etre connectes pour acceder a cette page",SOCIAL_AUTH_LOGIN_URL,'Se connecter',request)
   else:
     if Enigme.objects.filter(user=request.user, numero_enigme=nb, is_valid=True).exists():
       indice = repenigmes.objects.filter(numero_enigme=nb).get().indice
@@ -209,7 +212,7 @@ def weighted_random_by_dct(dct):
 
 def revealdino(request):
   if not request.user.is_authenticated:
-    return message_error("Vous devez etre connectes pour acceder a cette page",'/accounts/login/','Se connecter',request)
+    return message_error("Vous devez etre connectes pour acceder a cette page",SOCIAL_AUTH_LOGIN_URL,'Se connecter',request)
   else:
     montant = 2
     if int(get_balance(request.user)) >= montant:
@@ -235,7 +238,7 @@ def registerbet(request,id):
   valeurrouge = request.GET.get('Rouge')
   valeurbleue = request.GET.get('Bleu')
   if not request.user.is_authenticated:
-    return message_error("Vous devez etre connectes pour acceder a cette page",'/accounts/login/','Se connecter',request)
+    return message_error("Vous devez etre connectes pour acceder a cette page",SOCIAL_AUTH_LOGIN_URL,'Se connecter',request)
   else :
     if get_balance(request.user) < float(montant):
       return message_error("Vous n'avez pas assez d'argent pour effectuer cette transaction",'/','Retour a l\'accueil',request)
@@ -300,7 +303,7 @@ def my_account(request):
                 "recent_challenges" : rep }
     return render(request, 'my_account.html',context)
   else:
-    return message_error("Vous devez etre connectes pour acceder a votre compte",'/accounts/login/','Se connecter',request)
+    return message_error("Vous devez etre connectes pour acceder a votre compte",SOCIAL_AUTH_LOGIN_URL,'Se connecter',request)
 
 #@staff_member_required
 def registerstaff(request,name):
@@ -324,7 +327,7 @@ def unregisterstaff(request,name):
 
 def genavatarlist(request,nb):
   if not request.user.is_authenticated:
-    return message_error("Vous devez etre connectes pour acceder a cette page",'/accounts/login/','Se connecter',request)
+    return message_error("Vous devez etre connectes pour acceder a cette page",SOCIAL_AUTH_LOGIN_URL,'Se connecter',request)
   else:
     number = Stock.objects.filter(surnom=request.user).count()
     modulo = 3
@@ -426,8 +429,6 @@ def offline(request):
   return message_error("L'appli n'est pas connectée à Internet",'/','Désolé',request)
 
 
-from webpush import send_user_notification
-
 @staff_member_required
 def testnotif(request):
     webpush  = {"group": "eleves" }
@@ -436,8 +437,5 @@ def testnotif(request):
 
 @staff_member_required
 def sendnotif(request):
-    payload = {"head": "Ici la ski team !", "body": "salut la miff", "icon": "https://i.imgur.com/dRDxiCQ.png","url": "https://www.example.com"}
-    user = User.objects.get(username="peaquiem")
-    send_user_notification(user = user, payload=payload, ttl=1000)
-    #send_group_notification(group_name="eleves", payload=payload, ttl=1000)
-    return message_error("Notification envoyée !",'/sendnotif/','Retour a l\'accueil',request)
+    webpush  = {"group": "eleves" }
+    return render(request, 'testnotif.html',{"webpush":webpush})

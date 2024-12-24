@@ -19,7 +19,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'db.apps.DbConfig',
-    'pwa'
+    'pwa',
+    'social_django'
 ]
 
 MIDDLEWARE = [
@@ -45,6 +46,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -82,9 +85,22 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = (
+    'jura7park.auth.ChurrosAuthentik',
+    'django.contrib.auth.backends.ModelBackend',
+)
 
-# Internationalization
-# https://docs.djangoproject.com/en/5.1/topics/i18n/
+
+import environ
+env = environ.Env()
+environ.Env.read_env()
+
+SOCIAL_AUTH_CHURROS_KEY=env('SOCIAL_AUTH_CHURROS_KEY')
+SOCIAL_AUTH_CHURROS_SECRET=env('SOCIAL_AUTH_CHURROS_SECRET')
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
+SOCIAL_AUTH_LOGIN_URL = '/churros/login/'
+SOCIAL_AUTH_LOGIN_ERROR_URL = '/login-error/'
+
 
 LANGUAGE_CODE = 'en-us'
 

@@ -62,10 +62,12 @@ urlpatterns = [
     path('paybet2/<winner>/<cote>',views.paybet2),
 
     ###Notifications
-    path('webpush/', include('webpush.urls')),
     path('testnotif', views.testnotif),
     path('sendnotif', views.sendnotif),
     #path('sw.js', TemplateView.as_view(template_name='slistener.js', content_type='application/x-javascript')),
+
+
+    path('', include('social_django.urls', namespace='social')),
 
     ###PWA
     path('offline', views.offline),
