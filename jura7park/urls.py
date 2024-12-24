@@ -61,18 +61,9 @@ urlpatterns = [
     ##Pay users for bet n2
     path('paybet2/<winner>/<cote>',views.paybet2),
 
-    ###Notifications
-    path('testnotif', views.testnotif),
-    path('sendnotif', views.sendnotif),
-    #path('sw.js', TemplateView.as_view(template_name='slistener.js', content_type='application/x-javascript')),
-
-
     path('', include('social_django.urls', namespace='social')),
 
-    ###PWA
-    path('offline', views.offline),
-
-    ###MUST BE AT THE END
+    ###PWA (at the end)
     path('', include('pwa.urls')),
 
 ]

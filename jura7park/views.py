@@ -43,6 +43,7 @@ def test(request):
     soir = get_main(5,4)
   else:
     parisss = ""
+
   if str(datetime.datetime.now())[:11]==str(datetime.datetime(2023, 2, 25))[:11] or str(datetime.datetime.now())[:11]==str(datetime.datetime(2023, 2, 24))[:11]:
     matin = get_main(6,1)
     midi = get_main(6,2)
@@ -73,14 +74,13 @@ def test(request):
     aprem = get_main(3,3)
     soir = get_main(3,4)
 
-  elif str(datetime.datetime.now())[:11]==str(datetime.datetime(2023, 3, 2))[:11]:
+  else:
     matin = get_main(4,1)
     midi = get_main(4,2)
     aprem = get_main(4,3)
     soir = get_main(4,4)
 
-
-  return render(request,'indexe2.html', {"paris" : parisss,"matins":matin,"midi":midi,"aprem":aprem,"soir":soir})
+  return render(request,'index.html', {"paris" : parisss,"matins":matin,"midi":midi,"aprem":aprem,"soir":soir})
 
 
 def tempo(request):
@@ -413,18 +413,3 @@ def paybet2(request,winner,cote):
       i.is_paid = True
       i.save()
   return message_error("Les paris ont bien ete payes !",'/admin/','Retour a l\'accueil',request)
-
-def offline(request):
-  return message_error("L'appli n'est pas connectée à Internet",'/','Désolé',request)
-
-
-@staff_member_required
-def testnotif(request):
-    webpush  = {"group": "eleves" }
-    return render(request, 'testnotif.html',{"webpush":webpush})
-
-
-@staff_member_required
-def sendnotif(request):
-    webpush  = {"group": "eleves" }
-    return render(request, 'testnotif.html',{"webpush":webpush})
