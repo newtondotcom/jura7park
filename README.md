@@ -10,8 +10,7 @@ Backend is written in Python with the Django framework. Frontend is written in H
 
 
 ## Developpers
-[I](https://github.com/newtondotcom) am mainly the backend developer. I have also worked on the frontend but [Gauthier](https://github.com/Lighar/) is the main frontend developer.
-
+[Robin Augereau](https://github.com/newtondotcom) is mainly the backend developer. He have also worked on the frontend but [Gauthier](https://github.com/Lighar/) is the main frontend developer.
 
 ## Context
 This project took place during the 2023 winter semester (january and februry). It was a voluntary project and has been done in less than 2 months.
