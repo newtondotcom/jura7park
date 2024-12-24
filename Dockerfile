@@ -1,28 +1,36 @@
-FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS builder
-ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
-WORKDIR /app
-RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --frozen --no-install-project --no-dev
-ADD . /app
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev
+FROM python:3.10.16-alpine
 
+# Install dependencies
+RUN apk add --no-cache gcc musl-dev libffi-dev openssl-dev
 
-# Then, use a final image without uv
-FROM python:3.12-slim-bookworm
-# It is important to use the image that matches the builder, as the path to the
-# Python executable must be the same, e.g., using `python:3.11-slim-bookworm`
-# will fail.
+# Create a non-root user and group
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-# Copy the application from the builder
-COPY --from=builder --chown=app:app /app /app
+# Set environment variable
+ENV PYTHONUNBUFFERED=1
 
-# Place executables in the environment at the front of the path
-ENV PATH="/app/.venv/bin:$PATH"
+# Set the working directory
+WORKDIR /code
 
-EXPOSE 8000
-RUN chmod +x /app/scripts/entrypoint.sh
-# Run the FastAPI application by default
-ENTRYPOINT ["/app/scripts/entrypoint.sh"]
+# Copy and install dependencies
+COPY pyproject.toml uv.lock /code/
+RUN pip install .
+
+# Copy the rest of the application code
+COPY . /code/
+
+# Copy and set the entrypoint script as executable
+COPY ./scripts/entrypoint.sh /code/
+RUN chmod +x /code/entrypoint.sh
+
+# Change ownership of the application code to the non-root user
+RUN chown -R appuser:appgroup /code
+
+# Switch to the non-root user
+USER appuser
+
+# Expose the port
+EXPOSE 80
+
+# Set the entrypoint
+ENTRYPOINT ["sh", "/code/entrypoint.sh"]
