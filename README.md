@@ -20,3 +20,7 @@ This was my first time using Django and I have learned a lot about it. It is suc
 
 ## Features added
 I recently added WPA compatibility to the app and it is now fully Docker ready.
+
+## Features missing
+- Add real db with existing data
+- Add chrome dino game
